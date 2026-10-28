@@ -151,7 +151,7 @@ footer {
 .article p.eyebrow { font-size: clamp(11.5px, 0.6vw + 9px, 13px); margin: 0; }
 .article p.byline { font-size: 15px; margin: 0 0 8px; }
 .article figure { margin: 34px 0; }
-.article figure.wide { width: min(1000px, 100vw - 32px); margin-left: 50%; transform: translateX(-50%); }
+.article figure a { display: block; cursor: zoom-in; }
 .article figure img { width: 100%; height: auto; display: block; border-radius: 12px; border: 1px solid var(--line); background: #ffffff; }
 .article figure.dark img { background: #090b0f; }
 .article figcaption { color: var(--muted); font-size: 14.5px; line-height: 1.55; margin: 12px auto 0; max-width: 720px; }
