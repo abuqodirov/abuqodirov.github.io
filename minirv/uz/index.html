@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Maxsus PWM generatoriga ega RISC-V mikrokontrolleri</title>
+  <meta name="description" content="Toshkent shahridagi Turin politexnika universitetida biz maxsus ‘Pulse Width Modulation’ (PWM) generatoriga ega RISC-V mikrokontrollerini loyihalashtirdik va uni 55 nm CMOS texnologiyasi asosida…">
+  <meta name="author" content="Qodirov Abdushukur">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Maxsus PWM generatoriga ega RISC-V mikrokontrolleri">
+  <meta property="og:description" content="Toshkent shahridagi Turin politexnika universitetida biz maxsus ‘Pulse Width Modulation’ (PWM) generatoriga ega RISC-V mikrokontrollerini loyihalashtirdik va uni 55 nm CMOS texnologiyasi asosida…">
+  <meta property="og:url" content="https://abuqodirov.github.io/minirv/uz/">
+  <meta property="og:image" content="https://abuqodirov.github.io/minirv/media/preview.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="alternate" hreflang="en" href="https://abuqodirov.github.io/minirv/en/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+  <link rel="stylesheet" href="../../assets/css/site.css">
+</head>
+<body>
+  <header class="wrap nav">
+    <a class="brand" href="../../"><span class="mark">AQ</span>Abdushukur Qodirov</a>
+    <div class="lang"><span>UZ</span><a href="../en/" lang="en">EN</a></div>
+  </header>
+
+  <main class="article">
+  <p class="eyebrow">RISC-V · 55 nm · One Student One Chip</p>
+  <h1>Maxsus PWM generatoriga ega RISC-V mikrokontrolleri</h1>
+  <p class="byline">Qodirov Abdushukur</p>
+  <p>Toshkent shahridagi Turin politexnika universitetida biz maxsus ‘Pulse Width Modulation’ (PWM) generatoriga ega RISC-V mikrokontrollerini loyihalashtirdik va uni 55 nm CMOS texnologiyasi asosida ishlab chiqarishga topshirdik. Chip kam quvvat isteʼmol qiluvchi IoT qurilmalari va raqamli boshqariladigan quvvat elektronikasi uchun moʻljallangan. Bizning maʼlumotlarimizga koʻra, bu Oʻzbekistonda loyihalashtirilib, ishlab chiqarishga topshirilgan birinchi maxsus mikrokontrollerdir. Chiplar 2027-yil boshida tayyor boʻlishi kutilmoqda.</p>
+  <figure class="dark">
+    <picture><source srcset="../media/layout-3d.webp" type="image/webp"><img src="../media/layout-3d.gif" width="800" height="450" alt="Yadromizning tayyor topologiyasi 3D koʻrinishda"></picture>
+    <figcaption>Yadromizning tayyor topologiyasi 3D koʻrinishda (ECOS Studio dasturi). U tomoni taxminan 0,2 mm boʻlgan kvadratga sigʻadi va 92,000 ta tranzistorni o’z ichiga oladi.</figcaption>
+  </figure>
+  <h2>Loyiha</h2>
+  <p>Loyihamiz ikki qismdan iborat: RISC-V protsessor yadrosi va uning yonida qurilgan apparat PWM generatori (1-rasm). Ikkalasini uchun ham kod Verilogda noldan yozilgan. Protsessor standart RISC-V GCC orqali kompilyatsiya qilingan C dasturlarini bajaradi. Generator quvvat oʻzgartirgichi, motor drayveri yoki LED drayveri uchun kerakli signallarni hosil qiladi. Protsessor uni sozlab bergach, generator har bir siklda mustaqil ishlaydi, protsessor esa faqat boshqaruv konturi talab qilganda ‘duty cycle’ ni yangilaydi.</p>
+  <p>Loyihamiz 55 nm OSOC-DE SoC dagi 32 ta slotdan birini egallaydi. Xotira va periferiya qurilmalarini chipning oʻzi taqdim etadi: yuklash kodi uchun SPI flesh, dasturlar uchun PSRAM, UART konsoli, GPIO pinlari, toʻrt kanalli PWM bloki, taymerlar va I2C. Kichik boshqaruv mikrokontrolleri (MCU) chipni ishga tushiradi va faol yadroni tanlaydi. Bizning slot tanlanganda chip yadromiz va PWM generatorimiz asosidagi toʻliq mikrokontrollerga aylanadi.</p>
+  <figure class="wide">
+    <img src="../media/fig1-system-architecture.png" width="2600" height="1160" alt="Tizim arxitekturasi" loading="lazy">
+    <figcaption>1-rasm. Tizim arxitekturasi. Yadromiz (toʻq sariq rangda) OSOC-DE SoC ning bitta slotini egallaydi. Shina arbitri protsessor va PWM generatoriga yadroning yagona maʼlumot portidan birgalikda foydalanish imkonini beradi. Generator plataga GPIO pini yoki chipning PWM bloki orqali uzatiladi.</figcaption>
+  </figure>
+  <h2>PWM generatori</h2>
+  <p>Raqamli boshqariladigan DC-DC konverterlar yuqori PWM aniqligini talab qiladi. Aniqlik yetarli boʻlmasa, chiqish kuchlanishida chegaraviy sikllar (limit cycles) paydo boʻlishi mumkin: bular boshqaruv konturi bartaraf eta olmaydigan kichik, doimiy tebranishlardir. Oddiy raqamli PWM aniqligini bir bitga oshirish uchun takt chastotasini ikki barobar oshirish kerak, yuqori chastota esa koʻproq quvvat sarflaydi.</p>
+  <p>Generatorimiz Crovetti, Usmonov, Musolino va Gregoretti taklif qilgan diadik raqamli PWM (DDPWM) ni implementatsiya qiladi [1]. ‘Duty cycle’ soʻzi N ta yuqori bit n va M ta quyi bit m ga ajratiladi. Har bir kalitlash davrida impuls kengligi n yoki n + 1 qadamga teng boʻladi. Ditering modulyatori qoʻshimcha b bitini shunday tanlaydiki, 2^M davrdan iborat freym davomida oʻrtacha impuls kengligi toʻliq N + M bitli qiymatga teng boʻladi. [1] ishda 100 kHz chastotada ishlovchi pasaytiruvchi (buck) oʻzgartirgichda 3,2 MHz takt chastotali 5 bitli raqamli PWM 46 mV lik chegaraviy sikllarni koʻrsatgan. Xuddi shu 3,2 MHz chastotada N = 5 va M = 4 boʻlgan DDPWM esa ulardan xoli boʻlgan. Xuddi shunday aniqlikka erishish uchun oddiy 9 bitli PWM 51 MHz takt chastotasini talab qiladi.</p>
+  <p>2-rasmda ushbu usulni apparat darajasida qanday amalga oshirganimiz koʻrsatilgan. Protsessor generatorni toʻqqizta maxsus boshqaruv va holat registrlari (CSR 0x7C0–0x7C8) orqali sozlaydi. N ni 2 dan 12 gacha, M ni esa 0 dan 8 gacha belgilash mumkin. Ditering modulyatori uch rejimga ega: oddiy (diteringsiz), diadik ([1] dagi kabi) va termometrik. Har bir impuls kengligini siljitish-qoʻshish (shift-add) koʻpaytirgichi bir davr oldin hisoblab qoʻyadi. Generator shinadan protsessor bilan birgalikda foydalangani uchun, har bir kalitlash frontidan oldin buyruq tanlash shlyuzi (fetch gate) protsessorning buyruq oʻqishini qisqa vaqtga toʻxtatib turadi. Shu tufayli generatorning yozuvi doimo oʻz vaqtida bajariladi. Shuningdek, protsessor belgilangan sondagi davrlar davomida uyqu rejimiga oʻtishi mumkin, bu esa generator ishlayotganda shinani boʻsh qoldiradi.</p>
+  <figure class="wide">
+    <img src="../media/fig2-ddpwm-engine.png" width="2600" height="1160" alt="DDPWM generatorining blok-sxemasi" loading="lazy">
+    <figcaption>2-rasm. DDPWM generatorining blok-sxemasi ([1] dagi N + M bitli modulyator asosida). C: protsessor yozadigan konfiguratsiya registrlari; M: monitoring registri. Impuls kengligi H = min(O + (n + b)·L, T) formula bilan aniqlanadi, bu yerda T — kalitlash davri, L — qadam, O — siljish; barchasi takt sikllarida hisoblanadi.</figcaption>
+  </figure>
+  <h2>Loyihadan kremniygacha</h2>
+  <p>Loyihani Verilator va Icarus Verilog yordamida uch darajada tekshirdik: yadroning oʻzi, toʻliq chipning simulyatsiya modeli ichidagi yadro va sintezdan keyingi ventil darajasidagi netlist. C tilidagi test dasturlari buyruqlarni, PWM generatorini va umumiy chipning haqiqiy yuklanish ketma-ketligini sinovdan oʻtkazdi. Soʻngra Yosys loyihani 55 nm standart yacheykalarga akslantirdi, ECOS Studio esa ularni joylashtirdi va trassirovka qildi (3-rasm). Yakuniy topologiya taxminan 7 450 ta yacheykadan iborat boʻlib, ulardan 1 560 tasi trigger (flip-flop), kristall oʻlchami esa 214,6 × 215,4 µm. Loyiha barcha 31 ta yakuniy tekshiruvdan (sign-off) muvaffaqiyatli oʻtdi, jumladan dizayn qoidalarini tekshirish (DRC), topologiya va sxema mosligini tekshirish (LVS) hamda statik vaqt tahlilidan (STA).</p>
+  <figure class="wide">
+    <img src="../media/fig3-design-flow.png" width="2560" height="780" alt="Loyihalash bosqichlari" loading="lazy">
+    <figcaption>3-rasm. RTL dan ishlab chiqarishga topshirishgacha (tape-out) boʻlgan loyihalash bosqichlari.</figcaption>
+  </figure>
+  <h2>Boshlang’ich nuqta</h2>
+  <p>Ushbu loyiha 2026-yil 17–30-avgust kunlari Astanadagi Nazarbayev universitetida professor Nursultan Kabylkas tashkil etgan Chip Design Bootcamp intensiv oʻquv kursida boshlangan. Kurs One Student One Chip (OSOC) dasturining bir qismi boʻlib, unda talabalar protsessorni noldan loyihalashtiradi va uni ishlab chiqarishgacha olib boradi. Yadroni Toshkent shahridagi Turin politexnika universitetida yakunladik va Maqsud Usmonov bilan birgalikda uni PWM generatori bilan kengaytirdik.</p>
+  <figure class="">
+    <img src="../media/bootcamp-certificate.jpg" width="2000" height="1500" alt="Abdushukur Qodirov professor Nursultan Kabylkasdan sertifikat olmoqda" loading="lazy">
+    <figcaption>Abdushukur Qodirov (chapda) Astanadagi Nazarbayev universitetida oʻtkazilgan bootcampda professor Nursultan Kabylkasdan sertifikat olmoqda.</figcaption>
+  </figure>
+  <h2>Keyingi qadamlar</h2>
+  <p>Loyiha OSOC dasturi orqali ECOS55-2610 shuttle partiyasiga topshirildi. Bunday partiyada koʻplab loyihalar bitta kremniy plastinasida birgalikda ishlab chiqariladi. Hozir loyiha ishlab chiqaruvchi tomonidan koʻrib chiqilmoqda. Chiplar 2027-yil boshida tayyor boʻlishi kutilmoqda. Ular qoʻlimizga yetib kelgach, mikrokontrollerni sinov platasida ishga tushiramiz, unda dasturlarni bajaramiz va PWM generatorini real DC-DC konverterda sinab koʻramiz.</p>
+  <h2>Minnatdorchilik</h2>
+  <p>Loyiha davomida ilmiy rahbarlik qilgani va PWM generatori gʻoyasini taklif etgani uchun Toshkent shahridagi Turin politexnika universitetidan Maqsud Usmonovga; Astanadagi Nazarboyev universitetida chip loyihalash bootcampini tashkil etgani uchun professor Nursultan Kabylkasga; oʻquv kursi va ishlab chiqarishga topshirish imkoniyati uchun professor Zihao Yu va One Student One Chip jamoasiga; loyihalash vositalari va shuttle partiyasi uchun ECOS jamoasiga minnatdorchilik bildiramiz.</p>
+  <h2>Adabiyotlar</h2>
+  <div class="refs">
+  <p>[1] P. S. Crovetti, M. Usmonov, F. Musolino and F. Gregoretti, "Limit-cycle-free digitally controlled DC–DC converters based on dyadic digital PWM," <em>IEEE Transactions on Power Electronics</em>, vol. 35, no. 10, pp. 11155–11166, Oct. 2020.</p>
+  </div>
+  <p class="byline">Maqola <a href="../en/" lang="en">ingliz tilida</a> ham mavjud.</p>
+  </main>
+
+  <footer class="wrap">
+    <span>© 2026 Abdushukur Qodirov</span>
+    <div class="links"><a href="../../">Home</a><a href="https://github.com/abuqodirov">GitHub</a></div>
+  </footer>
+</body>
+</html>
