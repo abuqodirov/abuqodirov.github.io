@@ -68,12 +68,34 @@
   <div class="refs">
   <p>[1] P. S. Crovetti, M. Usmonov, F. Musolino and F. Gregoretti, "Limit-cycle-free digitally controlled DC–DC converters based on dyadic digital PWM," <em>IEEE Transactions on Power Electronics</em>, vol. 35, no. 10, pp. 11155–11166, Oct. 2020.</p>
   </div>
-  <p class="byline">Also available in <a href="../uz/" lang="uz">Oʻzbekcha</a>.</p>
+  <p class="byline">Also available in <a href="../uz/">Uzbek</a>.</p>
   </main>
 
   <footer class="wrap">
     <span>© 2026 Abdushukur Qodirov</span>
     <div class="links"><a href="../../">Home</a><a href="https://github.com/abuqodirov">GitHub</a></div>
   </footer>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox-close" type="button" aria-label="Close">×</button>
+    <img alt="">
+  </div>
+  <script>
+  (() => {
+    const box = document.getElementById("lightbox");
+    const img = box.querySelector("img");
+    const close = () => { box.hidden = true; img.removeAttribute("src"); document.body.style.overflow = ""; };
+    document.querySelectorAll(".article figure a").forEach(a => a.addEventListener("click", e => {
+      e.preventDefault();
+      img.src = a.href;
+      img.alt = a.querySelector("img").alt;
+      box.hidden = false;
+      document.body.style.overflow = "hidden";
+      box.querySelector("button").focus();
+    }));
+    box.addEventListener("click", close);
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && !box.hidden) close(); });
+  })();
+  </script>
 </body>
 </html>
