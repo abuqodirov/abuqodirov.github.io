@@ -79,7 +79,7 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 /* Welcome page */
 .hero { padding: 72px 0 24px; }
-.eyebrow { font: 500 13px/1.4 var(--mono); letter-spacing: 0.02em; color: var(--accent); margin: 0; }
+.eyebrow { font: 500 clamp(11.5px, 0.6vw + 9px, 13px)/1.5 var(--mono); letter-spacing: 0.02em; color: var(--accent); margin: 0; text-wrap: balance; }
 h1 { font-size: clamp(40px, 7vw, 72px); line-height: 1.02; letter-spacing: -0.035em; margin: 14px 0 18px; font-weight: 700; }
 .lead { font-size: clamp(18px, 2.2vw, 21px); color: var(--muted); max-width: 660px; margin: 0; }
 
@@ -148,6 +148,8 @@ footer {
 .byline { color: var(--muted); font-size: 15px; margin: 0 0 8px; }
 .article h2 { font-size: 26px; line-height: 1.25; letter-spacing: -0.02em; margin: 52px 0 14px; }
 .article p { margin: 0 0 18px; font-size: 17.5px; }
+.article p.eyebrow { font-size: clamp(11.5px, 0.6vw + 9px, 13px); margin: 0; }
+.article p.byline { font-size: 15px; margin: 0 0 8px; }
 .article figure { margin: 34px 0; }
 .article figure.wide { width: min(1000px, 100vw - 32px); margin-left: 50%; transform: translateX(-50%); }
 .article figure img { width: 100%; height: auto; display: block; border-radius: 12px; border: 1px solid var(--line); background: #ffffff; }
