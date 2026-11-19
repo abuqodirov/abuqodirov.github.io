@@ -202,14 +202,9 @@ export const site = {
             end: '2025 —',
           },
           {
-            name: 'Chip Design Bootcamp, Nazarbayev University',
-            detail: 'Astana, Kazakhstan',
-            end: '2026',
-          },
-          {
             name: 'Presidential School in Andijan',
             detail: 'A-Levels',
-            end: '2025',
+            end: '2021 — 2025',
           },
         ],
       },
