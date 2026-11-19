@@ -40,11 +40,29 @@ export type Page = {
   sections: Section[];
 };
 
+/* A section can carry any combination of the three, and they come out in
+   this order: paragraphs, then pairs, then rows. Leave out what you do
+   not need. */
 export type Section = {
   /** The small uppercase heading. Leave out for a run of plain paragraphs. */
   heading?: string;
   /** One string per paragraph. Prose. */
-  body: string[];
+  body?: string[];
+  /** Label on the left, text on the right. For skills, scores, grades. */
+  pairs?: { label: string; value: string }[];
+  /** Dated entries. For education, publications, awards. */
+  rows?: {
+    /** The first line, in full width. */
+    name: string;
+    /** The grey line under it. Optional. Prose. */
+    detail?: string;
+    /** The year, pinned to the right. Optional. */
+    end?: string;
+    /** A longer grey line below, in reading type. Optional. Prose. */
+    note?: string;
+    /** Makes the name a link. Optional. */
+    url?: string;
+  }[];
 };
 
 export type Elsewhere = {
@@ -156,7 +174,13 @@ export const site = {
   ] satisfies Elsewhere[],
 
   /* ── About page ───────────────────────────────────────────────────────
-     → /about. The intro sits above the first heading. Prose throughout. */
+     → /about. The intro sits above the first heading.
+
+     Each section is a heading plus any of: `body` (paragraphs),
+     `pairs` (label and value), `rows` (dated entries). They come out in
+     the order you write the sections, so move a whole block by moving it
+     in this list. To put one on its own page instead — a /cv, say — cut
+     the section and paste it into a `pages` entry above. */
   about: {
     title: 'about',
     intro: [
@@ -167,6 +191,59 @@ export const site = {
         heading: 'now',
         body: [
           'Working through 一生一芯 (One Student One Chip) — designing and taping out a RISC-V core. The design is finished and is now waiting for fabrication.',
+        ],
+      },
+      {
+        heading: 'education',
+        rows: [
+          {
+            name: 'Turin Polytechnic University in Tashkent',
+            detail: 'Engineering',
+            end: '2025 —',
+          },
+          {
+            name: 'Chip Design Bootcamp, Nazarbayev University',
+            detail: 'Astana, Kazakhstan',
+            end: '2026',
+          },
+          {
+            name: 'Presidential School in Andijan',
+            detail: 'A-Levels',
+            end: '2025',
+          },
+        ],
+      },
+      {
+        heading: 'results',
+        pairs: [
+          {
+            label: 'a-levels',
+            value: 'Computer Science A*, Pure Mathematics A*, Physics A',
+          },
+          { label: 'sat', value: '1510 — August 2024' },
+          { label: 'ielts', value: '8.0' },
+        ],
+      },
+      {
+        heading: 'skills',
+        pairs: [
+          {
+            label: 'hardware',
+            value:
+              'Custom PCB design (KiCad, EasyEDA, JLCPCB, LCSC) · microcontrollers (STM32, CH32) · embedded systems',
+          },
+          { label: 'software', value: 'C · C++ · Python · Linux · Git' },
+        ],
+      },
+      {
+        heading: 'publications',
+        rows: [
+          {
+            name: 'Critical Review of LoRaWAN Security Architectures in Industrial IoT Applications',
+            detail: 'Yangi Oʻzbekiston Ilmiy Tadqiqotlar Jurnali',
+            // Add `url:` here when the paper has an address online.
+            note: 'Co-authored. An analysis of the LoRaWAN protocol and its security architecture in industrial IoT.',
+          },
         ],
       },
       {

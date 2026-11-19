@@ -1,6 +1,13 @@
 ---
-/* Renders the `sections` array of a page or the about page from src/site.ts.
-   Paragraphs are written straight into the HTML, so a line in site.ts may
+/* Renders the `sections` array of the about page, or of any page in
+   `pages`, from src/site.ts.
+
+   A section carries any combination of three things, in this order:
+     body   paragraphs
+     pairs  label-and-value lines, for skills or results
+     rows   dated entries, for education, publications, awards
+
+   Paragraphs and values are written straight into the HTML, so they may
    contain <a>, <b>, <i> — it is your own file, not visitor input. */
 import type { Section } from '../site';
 
@@ -18,9 +25,34 @@ const { intro = [], sections = [] } = Astro.props;
     sections.map((s) => (
       <>
         {s.heading && <h2>{s.heading}</h2>}
-        {s.body.map((p) => (
-          <p set:html={p} />
-        ))}
+
+        {s.body?.map((p) => <p set:html={p} />)}
+
+        {s.pairs && s.pairs.length > 0 && (
+          <ul class="pairs">
+            {s.pairs.map((p) => (
+              <li>
+                <span class="k">{p.label}</span>
+                <span class="v" set:html={p.value} />
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {s.rows && s.rows.length > 0 && (
+          <ul class="srows">
+            {s.rows.map((r) => (
+              <li class="srow">
+                <span class="srow-name">
+                  {r.url ? <a href={r.url}>{r.name}</a> : r.name}
+                </span>
+                {r.end && <span class="srow-end">{r.end}</span>}
+                {r.detail && <span class="srow-mid" set:html={r.detail} />}
+                {r.note && <span class="srow-note" set:html={r.note} />}
+              </li>
+            ))}
+          </ul>
+        )}
       </>
     ))
   }
