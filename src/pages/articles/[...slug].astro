@@ -1,0 +1,34 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import site from '../../site';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('articles');
+  return entries
+    .filter((e) => !e.data.draft)
+    .map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const label = site.headings.articles;
+const fmt = (date: Date) => date.toISOString().slice(0, 10);
+---
+
+<Base title={d.title} description={d.summary || ''} section={label}>
+  <a class="back" href="/articles">{site.ui.backPrefix} {label}</a>
+
+  <header class="art-head">
+    <h1>{d.title}</h1>
+    <p class="art-meta">
+      <span>{fmt(d.date)}</span>
+      {d.tags?.map((t) => <span>{t}</span>)}
+    </p>
+  </header>
+
+  <div class="prose">
+    <Content />
+  </div>
+</Base>

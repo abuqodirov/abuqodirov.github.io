@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import Sections from '../components/Sections.astro';
+import site from '../site';
+
+/* Every entry in `pages` in src/site.ts appears at /its-slug.
+   Astro gives the fixed routes (/about, /contact, /articles) priority,
+   so a page here can never shadow them. */
+export function getStaticPaths() {
+  return site.pages.map((page) => ({ params: { slug: page.slug }, props: { page } }));
+}
+
+const { page } = Astro.props;
+---
+
+<Base title={page.title} description={page.lede || ''} section={page.slug}>
+  <header class="art-head">
+    <h1>{page.title}</h1>
+  </header>
+
+  {page.lede && <p class="lede" set:html={page.lede} />}
+
+  <Sections sections={page.sections} />
+</Base>

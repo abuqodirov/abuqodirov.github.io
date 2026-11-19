@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import Sections from '../components/Sections.astro';
+import site from '../site';
+
+const { title, intro, sections } = site.about;
+---
+
+<Base title={title} section={title} description={intro[0] || ''}>
+  <header class="art-head">
+    <h1>{title}</h1>
+  </header>
+
+  <Sections intro={intro} sections={sections} />
+</Base>

@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+import site from '../../site';
+import { getWriting, fmtDate } from '../../lib/writing';
+
+const writing = await getWriting();
+const label = site.headings.articles;
+---
+
+<Base title={label} section={label}>
+  <div class="sec-head" style="margin-bottom:6px;">
+    <h2>{label}</h2>
+    <span style="color:var(--faint);">{writing.length}</span>
+  </div>
+
+  {
+    writing.length === 0 ? (
+      <div class="empty" style="margin-top:20px;">
+        {site.ui.noArticles}
+      </div>
+    ) : (
+      <ul class="rows">
+        {writing.map((w) => (
+          <li class="row row-article">
+            <a href={w.href}>
+              <span class="row-title">{w.title}</span>
+              <span class="row-end">{fmtDate(w.date)}</span>
+              {w.summary && <span class="row-sum">{w.summary}</span>}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Base>

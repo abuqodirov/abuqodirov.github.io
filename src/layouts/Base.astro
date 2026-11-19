@@ -1,0 +1,151 @@
+---
+import '../styles/terminal.css';
+import site from '../site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  section?: string;
+  /** The home page lets the rail carry the <h1>; other pages have their own. */
+  home?: boolean;
+}
+
+const { title, description, section = 'home', home = false } = Astro.props;
+const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.role}`;
+const desc = description || site.intro[0] || '';
+
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+
+const { typeset, accent } = site.appearance;
+const st = site.status;
+---
+
+<!doctype html>
+<html lang="en" data-typeset={typeset}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={desc} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:type" content="website" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230f0f0e'/%3E%3Ctext x='6' y='23' font-family='monospace' font-size='20' fill='%23e0563a'%3E%3E%3C/text%3E%3C/svg%3E"
+    />
+    {accent && <style set:html={`:root{--accent:${accent};}`}></style>}
+    <!-- Apply the stored theme before first paint so the page never flashes. -->
+    <script is:inline>
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+  </head>
+
+  <body>
+    <a class="skip" href="#main">{site.ui.skipToContent}</a>
+
+    <div class="shell">
+      <aside class="rail">
+        {
+          home ? (
+            <h1 class="rname">{site.name}</h1>
+          ) : (
+            <p class="rname">
+              <a href="/">{site.name}</a>
+            </p>
+          )
+        }
+        {site.role && <p class="rrole">{site.role}</p>}
+
+        <nav class="rnav" aria-label="Primary">
+          {
+            site.nav.map((item) => (
+              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            ))
+          }
+        </nav>
+      </aside>
+
+      <main class="col" id="main">
+        <slot />
+      </main>
+    </div>
+
+    <div class="status">
+      <span class="tag">{section}</span>
+      {st.currently && <span class="cur">{st.currently}</span>}
+      <span class="spacer"></span>
+      <button class="theme-btn" id="theme" type="button">dark</button>
+      <span class="clock" id="clock" data-tz={st.timezone || 'UTC'} data-city={st.city || ''}
+        >{st.city}</span
+      >
+    </div>
+
+    <script>
+      // Theme: an explicit choice is stored and beats the system preference.
+      const root = document.documentElement;
+      const btn = document.getElementById('theme');
+      const media = window.matchMedia('(prefers-color-scheme: light)');
+
+      const current = () =>
+        root.dataset.theme === 'dark' || root.dataset.theme === 'light'
+          ? root.dataset.theme
+          : media.matches
+            ? 'light'
+            : 'dark';
+
+      if (btn) {
+        const paint = () => {
+          btn.textContent = current();
+          btn.setAttribute('aria-label', `Theme: ${current()}. Switch.`);
+        };
+        btn.addEventListener('click', () => {
+          const next = current() === 'dark' ? 'light' : 'dark';
+          root.dataset.theme = next;
+          try {
+            localStorage.setItem('theme', next);
+          } catch (e) {}
+          paint();
+        });
+        media.addEventListener('change', paint);
+        paint();
+      }
+
+      // Clock: visitors see the author's local time, not their own.
+      const clock = document.getElementById('clock');
+      if (clock) {
+        const tz = clock.dataset.tz || 'UTC';
+        const city = clock.dataset.city || '';
+        const tick = () => {
+          let time: string;
+          try {
+            time = new Intl.DateTimeFormat('en-GB', {
+              timeZone: tz,
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+            }).format(new Date());
+          } catch (e) {
+            return; // an invalid time zone just leaves the city showing
+          }
+          clock.textContent = city ? `${city} · ${time}` : time;
+        };
+        tick();
+        setInterval(tick, 15000);
+      }
+    </script>
+  </body>
+</html>
