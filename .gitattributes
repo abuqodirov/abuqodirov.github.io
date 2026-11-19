@@ -1,0 +1,10 @@
+* text=auto eol=lf
+
+# The published minirv article must stay byte-identical.
+public/minirv/** -text
+
+# Binary assets
+*.png binary
+*.jpg binary
+*.gif binary
+*.webp binary

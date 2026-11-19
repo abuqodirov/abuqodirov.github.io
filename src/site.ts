@@ -47,19 +47,37 @@ export type Section = {
   body: string[];
 };
 
+export type Elsewhere = {
+  title: string;
+  /** YYYY-MM-DD. Sorted together with the Markdown articles. */
+  date: string;
+  summary?: string;
+  /** Where it actually lives. */
+  url: string;
+};
+
+export type Link = {
+  /** The small grey word in the left column. */
+  label: string;
+  /** What the link reads as on the page. */
+  text: string;
+  /** Where it goes. Use mailto: for an address. */
+  url: string;
+};
+
 export const site = {
   /* ── Identity ─────────────────────────────────────────────────────────
      → top of the left rail, the browser tab title, and link previews. */
   name: 'abdushukur qodirov',
-  role: 'electronics · pcb design · risc-v',
+  role: 'engineering student · tashkent',
 
   /* ── Home page ────────────────────────────────────────────────────────
      → the paragraphs directly under your name.
      The first one is bigger than the rest, and is also the description
      search engines and Telegram show. Prose. */
   intro: [
-    'I design boards, break them, and write down what went wrong.',
-    'Currently working through 一生一芯 (One Student One Chip), taping out a RISC-V core. Before that: CanSat, a handful of four-layer boards, and a couple of chip design bootcamps.',
+    'I am a third-year engineering student at Turin Polytechnic University in Tashkent.',
+    'I designed a RISC-V chip, and it has been accepted for fabrication — the chips are expected in early 2027. I design PCBs, write firmware, and build FPGA projects from scratch.',
   ],
 
   /* ── Navigation ───────────────────────────────────────────────────────
@@ -93,12 +111,12 @@ export const site = {
       name: '一生一芯',
       role: 'risc-v core, in progress',
       year: '2026',
-      url: '',
+      url: '/minirv/en/',
     },
     {
       name: 'cansat',
       role: 'electronics, telemetry',
-      year: '2024',
+      year: '2026',
       url: '',
     },
   ] satisfies Project[],
@@ -120,43 +138,65 @@ export const site = {
     // },
   ] satisfies Page[],
 
+  /* ── Writing that lives somewhere else ────────────────────────────────
+     → listed under "writing" next to the Markdown articles and sorted by
+     date with them, but the link goes to the real address instead of
+     to /articles/….
+
+     The minirv article is here because its address is already published
+     in the university Telegram post and on LinkedIn, and must not move. */
+  elsewhere: [
+    {
+      title: 'A RISC-V Microcontroller with a Custom PWM Engine',
+      date: '2026-10-29',
+      summary:
+        'How we designed a RISC-V microcontroller with a custom PWM engine and submitted it for fabrication in a 55 nm process. Also in Uzbek.',
+      url: '/minirv/en/',
+    },
+  ] satisfies Elsewhere[],
+
   /* ── About page ───────────────────────────────────────────────────────
      → /about. The intro sits above the first heading. Prose throughout. */
   about: {
     title: 'about',
     intro: [
-      'Electronics student. I design PCBs, write a bit of RTL, and document the parts that went wrong, because those are the parts worth reading.',
+      'Engineering student at Turin Polytechnic University in Tashkent. Born in Andijan, Uzbekistan, and graduated from the Presidential School there in 2025.',
     ],
     sections: [
       {
         heading: 'now',
         body: [
-          'Working through 一生一芯 (One Student One Chip) — designing and taping out a RISC-V core. There is very little written about that program in English, so some of it ends up here.',
+          'Working through 一生一芯 (One Student One Chip) — designing and taping out a RISC-V core. The design is finished and is now waiting for fabrication.',
         ],
       },
       {
-        heading: 'before',
-        body: [
-          'CanSat, a handful of four-layer boards, and a couple of chip design bootcamps. Three board revisions before the first one worked, which I am told is normal.',
-        ],
-      },
-      {
-        heading: 'elsewhere',
-        body: [
-          'Outside the bench: films, 17th-century painting, Vivaldi, and Uzbek literature that deserves more readers than it has.',
-        ],
+        heading: 'hobbies',
+        body: ['Football, movies, fiction and fantasy books, and eating plov.'],
       },
     ] satisfies Section[],
   },
 
   /* ── Contact page ─────────────────────────────────────────────────────
-     → /contact. Every link here also needs no mention anywhere else.
-     Delete the email line if you would rather not publish it. */
+     → /contact, in this order. `label` is the grey word on the left,
+     `text` is what the link reads as, `url` is where it actually goes.
+     Delete a line and it is gone from the site. */
   contact: {
     title: 'contact',
-    lede: 'The fastest way to reach me is email. I read everything, and I reply to most of it.',
-    email: 'qodirov.abdushukurpm@gmail.com',
-    links: [{ label: 'github', url: 'https://github.com/abuqodirov' }],
+    lede: '',
+    links: [
+      { label: 'telegram', text: '@abuqodirovv', url: 'https://t.me/abuqodirovv' },
+      {
+        label: 'email',
+        text: 'qodirov.abdushukurpm@gmail.com',
+        url: 'mailto:qodirov.abdushukurpm@gmail.com',
+      },
+      { label: 'github', text: '/abuqodirov', url: 'https://github.com/abuqodirov' },
+      {
+        label: 'linkedin',
+        text: '/in/abdushukur',
+        url: 'https://www.linkedin.com/in/abdushukur-qodirov/',
+      },
+    ] satisfies Link[],
   },
 
   /* ── Status bar ───────────────────────────────────────────────────────
@@ -188,7 +228,7 @@ export const site = {
     noArticles: 'Nothing published yet.',
     /** Shown on the home page when there are no projects and no articles. */
     nothingYet: 'Nothing here yet.',
-    /** Shown on /contact when no email and no links are set. */
+    /** Shown on /contact when no links are set. */
     noContact: 'No contact details set.',
   },
 };
