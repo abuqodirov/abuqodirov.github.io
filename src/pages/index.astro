@@ -1,0 +1,80 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import site from '../site';
+
+/* A classified project is dropped here, before anything is rendered.
+   It never reaches the built HTML. */
+const projects = site.projects
+  .filter((p) => !p.classified)
+  .sort((a, b) => (b.year || '').localeCompare(a.year || ''));
+
+const articles = (await getCollection('articles'))
+  .filter((a) => !a.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 5);
+
+const [lede, ...rest] = site.intro;
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+---
+
+<Base section="home" home>
+  {lede && <p class="lede-home" set:html={lede} />}
+  {
+    rest.length > 0 && (
+      <div class="bio">
+        {rest.map((p) => (
+          <p set:html={p} />
+        ))}
+      </div>
+    )
+  }
+
+  {
+    projects.length > 0 && (
+      <section class="sec">
+        <div class="sec-head">
+          <h2>{site.headings.projects}</h2>
+        </div>
+        <ul class="rows">
+          {projects.map((p) => (
+            <li class="row">
+              <span class="row-name">{p.url ? <a href={p.url}>{p.name}</a> : p.name}</span>
+              <span class="row-mid">{p.role}</span>
+              <span class="row-end">{p.year}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    articles.length > 0 && (
+      <section class="sec">
+        <div class="sec-head">
+          <h2>{site.headings.articles}</h2>
+          <a href="/articles">{site.headings.allArticles}</a>
+        </div>
+        <ul class="rows">
+          {articles.map((a) => (
+            <li class="row row-article">
+              <a href={`/articles/${a.id}`}>
+                <span class="row-title">{a.data.title}</span>
+                <span class="row-end">{fmt(a.data.date)}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    projects.length === 0 && articles.length === 0 && (
+      <div class="empty" style="margin-top:36px;">
+        {site.ui.nothingYet}
+      </div>
+    )
+  }
+</Base>

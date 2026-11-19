@@ -1,0 +1,34 @@
+---
+title: Why my first four-layer board oscillated at 40 MHz
+date: 2026-08-14
+draft: false
+summary: >-
+  The schematic was right. The board oscillated anyway, and the answer was three
+  days away in the stack-up.
+tags:
+  - boards
+  - debugging
+---
+
+A clean 40 MHz ring on a rail that was supposed to be flat DC. Not noise, not a
+scope artefact from a bad ground lead — a genuine, repeatable oscillation that
+appeared the moment the regulator came out of shutdown.
+
+## what it actually was
+
+The ground pour was on layer 4 instead of layer 2. Every fast edge's return
+current had to travel through 1.6 mm of FR4 before it found its way home, and
+the loop area that created was enough to turn the supply into an antenna, and
+the antenna into a feedback path.
+
+> Once you can see the loop, the fix is obvious, and I felt appropriately stupid
+> about the three days it took me.
+
+## what I would do differently
+
+- Put the ground plane adjacent to the layer carrying the fast edges. Always. That's the whole rule.
+- Check the stack-up before routing, not after fabrication.
+- Probe with a short ground spring, not a six-inch clip lead, before concluding anything about high-frequency behaviour.
+
+This is a seed article so the list isn't empty — edit or delete it at
+`/keystatic`.

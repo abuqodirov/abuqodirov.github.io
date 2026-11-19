@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import site from '../../site';
+
+const articles = (await getCollection('articles'))
+  .filter((a) => !a.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const label = site.headings.articles;
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+---
+
+<Base title={label} section={label}>
+  <div class="sec-head" style="margin-bottom:6px;">
+    <h2>{label}</h2>
+    <span style="color:var(--faint);">{articles.length}</span>
+  </div>
+
+  {
+    articles.length === 0 ? (
+      <div class="empty" style="margin-top:20px;">
+        {site.ui.noArticles}
+      </div>
+    ) : (
+      <ul class="rows">
+        {articles.map((a) => (
+          <li class="row row-article">
+            <a href={`/articles/${a.id}`}>
+              <span class="row-title">{a.data.title}</span>
+              <span class="row-end">{fmt(a.data.date)}</span>
+              {a.data.summary && <span class="row-sum">{a.data.summary}</span>}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Base>

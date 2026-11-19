@@ -1,0 +1,27 @@
+---
+/* Renders the `sections` array of a page or the about page from src/site.ts.
+   Paragraphs are written straight into the HTML, so a line in site.ts may
+   contain <a>, <b>, <i> — it is your own file, not visitor input. */
+import type { Section } from '../site';
+
+interface Props {
+  intro?: string[];
+  sections?: Section[];
+}
+
+const { intro = [], sections = [] } = Astro.props;
+---
+
+<div class="prose">
+  {intro.map((p) => <p set:html={p} />)}
+  {
+    sections.map((s) => (
+      <>
+        {s.heading && <h2>{s.heading}</h2>}
+        {s.body.map((p) => (
+          <p set:html={p} />
+        ))}
+      </>
+    ))
+  }
+</div>

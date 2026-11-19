@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import site from '../site';
+
+const { title, lede, email, links } = site.contact;
+
+const rows = [
+  ...(email ? [{ k: 'email', label: email, url: `mailto:${email}` }] : []),
+  ...links.map((l) => ({
+    k: l.label,
+    label: l.url.replace(/^https?:\/\//, ''),
+    url: l.url,
+  })),
+];
+---
+
+<Base title={title} section={title} description={lede}>
+  <header class="art-head">
+    <h1>{title}</h1>
+  </header>
+
+  {lede && <p class="lede" set:html={lede} />}
+
+  {
+    rows.length === 0 ? (
+      <div class="empty">{site.ui.noContact}</div>
+    ) : (
+      <ul class="contact-list">
+        {rows.map((r) => (
+          <li>
+            <span class="k">{r.k}</span>
+            <span>
+              <a href={r.url}>{r.label}</a>
+            </span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Base>
